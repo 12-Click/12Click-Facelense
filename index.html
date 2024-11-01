@@ -43,32 +43,33 @@
             transform: translate(-50%, 0);
         }
 
-        /* Professional button styling - Positioned in the top-right corner */
+        /* Professional button styling - Positioned in the top-right corner, initially hidden */
         #captureButton {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 8px 16px; /* Smaller padding */
+            font-size: 14px; /* Smaller font size */
             font-weight: bold;
             color: #ffffff;
             background: linear-gradient(145deg, #ff7e5f, #feb47b);
             border: none;
-            border-radius: 30px;
+            border-radius: 20px;
             cursor: pointer;
+            display: none; /* Hidden until page load */
             z-index: 10;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         #captureButton:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
         }
 
         #captureButton:active {
             transform: translateY(0);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -109,6 +110,11 @@
             height: 480
         });
         camera.start();
+
+        // Show the button when everything is ready
+        window.addEventListener('load', () => {
+            captureButton.style.display = 'block';
+        });
 
         function onResults(results) {
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
