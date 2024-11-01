@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jovenes Misioneros!</title>
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="images/logo2.png">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror the video for a selfie effect */
+            display: block; /* Prevents loading icon display */
+        }
+
+        .overlay {
+            position: absolute;
+            pointer-events: none; /* Prevent interaction with overlays */
+            display: none; /* Initially hide overlays */
+        }
+
+        #halo {
+            width: 50%; /* Adjust size as needed */
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        #text {
+            width: 50%; /* Adjust size as needed */
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <video id="video" playsinline autoplay muted></video> <!-- Added muted attribute -->
+        <img id="halo" class="overlay" src="images/halo.gif" alt="Halo">
+        <img id="text" class="overlay" src="images/text2.gif" alt="Text"> <!-- Change to your GIF -->
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+    <script>
+        const video = document.getElementById('video');
+        const halo = document.getElementById('halo');
+        const text = document.getElementById('text');
+
+        // Load the face mesh model
+        const faceMesh = new FaceMesh({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+            }
+        });
+
+        faceMesh.onResults(onResults);
+
+        // Set up the camera
+        const camera = new Camera(video, {
+            onFrame: async () => {
+                await faceMesh.send({ image: video });
+            },
+            width: 640,
+            height: 480
+        });
+        camera.start();
+
+        function onResults(results) {
+            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                const landmarks = results.multiFaceLandmarks[0];
+
+                // Show the GIF overlays after detecting the face
+                halo.style.display = 'block';
+                text.style.display = 'block';
+
+                // Get the position for the halo (above the forehead)
+                const forehead = landmarks[10]; // Forehead landmark
+                const haloX = (1 - forehead.x) * video.clientWidth; // Adjust for mirrored effect
+                const haloY = forehead.y * video.clientHeight - 200; // Adjust higher above the head
+
+                halo.style.left = `${haloX}px`;
+                halo.style.top = `${haloY}px`;
+
+                // Position the text under the chin (use the chin landmark for better placement)
+                const chin = landmarks[152];
+                const textX = (1 - chin.x) * video.clientWidth; // Adjust for mirrored effect
+                const textY = chin.y * video.clientHeight + 30; // Adjust as necessary for text positioning
+
+                text.style.left = `${textX}px`;
+                text.style.top = `${textY}px`;
+            }
+        }
+    </script>
+</body>
+</html>
