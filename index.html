@@ -111,9 +111,11 @@
         });
         camera.start();
 
-        // Show the button when everything is ready
+        // Show the button when everything is fully loaded
         window.addEventListener('load', () => {
-            captureButton.style.display = 'block';
+            setTimeout(() => {
+                captureButton.style.display = 'block';
+            }, 500); // Optional: delay to ensure page elements are fully loaded
         });
 
         function onResults(results) {
