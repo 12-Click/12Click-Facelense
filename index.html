@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12Click - Facelense</title>
+    <title>Jovenes Misioneros!</title>
     <!-- Favicon-->
     <link rel="shortcut icon" href="images/logo2.png">
     <style>
@@ -43,18 +43,32 @@
             transform: translate(-50%, 0);
         }
 
-        /* Button styling */
+        /* Professional button styling - Positioned in the top-right corner */
         #captureButton {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 20px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
             font-size: 16px;
-            background-color: white;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(145deg, #ff7e5f, #feb47b);
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #captureButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        #captureButton:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -112,10 +126,10 @@
                 halo.style.left = `${haloX}px`;
                 halo.style.top = `${haloY}px`;
 
-                // Position the text under the chin (use the chin landmark for better placement)
+                // Position the text closer to the chin
                 const chin = landmarks[152];
                 const textX = (1 - chin.x) * video.clientWidth; // Adjust for mirrored effect
-                const textY = chin.y * video.clientHeight + 30; // Adjust as necessary for text positioning
+                const textY = chin.y * video.clientHeight + 20; // Reduced offset to bring it closer to chin
 
                 text.style.left = `${textX}px`;
                 text.style.top = `${textY}px`;
