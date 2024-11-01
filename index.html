@@ -22,41 +22,34 @@
             height: 100vh;
             object-fit: cover;
             transform: scaleX(-1); /* Mirror the video for a selfie effect */
-            display: block; /* Prevents loading icon display */
+            display: block;
         }
 
         .overlay {
             position: absolute;
-            pointer-events: none; /* Prevent interaction with overlays */
+            pointer-events: none;
             display: none; /* Initially hide overlays */
         }
 
-        #halo {
-            width: 50%; /* Adjust size as needed */
+        #halo, #text {
+            width: 50%; /* Adjust sizes as needed */
             left: 50%;
             transform: translate(-50%, 0);
         }
 
-        #text {
-            width: 50%; /* Adjust size as needed */
-            left: 50%;
-            transform: translate(-50%, 0);
-        }
-
-        /* Professional button styling - Positioned in the top-right corner, initially hidden */
         #captureButton {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 8px 16px; /* Smaller padding */
-            font-size: 14px; /* Smaller font size */
+            padding: 8px 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #ffffff;
             background: linear-gradient(145deg, #ff7e5f, #feb47b);
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            display: none; /* Hidden until page load */
+            display: none;
             z-index: 10;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -75,11 +68,11 @@
 </head>
 <body>
     <div class="container">
-        <video id="video" playsinline autoplay muted></video> <!-- Added muted attribute -->
+        <video id="video" playsinline autoplay muted></video>
         <img id="halo" class="overlay" src="images/200.gif" alt="Halo">
-        <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text"> <!-- Change to your GIF -->
+        <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
         <button id="captureButton">Take Selfie</button>
-        <canvas id="canvas" style="display: none;"></canvas> <!-- Hidden canvas for capturing selfies -->
+        <canvas id="canvas" style="display: none;"></canvas>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
@@ -111,34 +104,35 @@
         });
         camera.start();
 
-        // Show the button when everything is fully loaded
+        // Show the button when fully loaded
         window.addEventListener('load', () => {
             setTimeout(() => {
                 captureButton.style.display = 'block';
-            }, 500); // Optional: delay to ensure page elements are fully loaded
+            }, 500); // Optional: slight delay to ensure readiness
         });
+
+        // Track positions of overlays
+        let haloX, haloY, textX, textY;
 
         function onResults(results) {
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                 const landmarks = results.multiFaceLandmarks[0];
 
-                // Show the GIF overlays after detecting the face
+                // Show overlays after detecting the face
                 halo.style.display = 'block';
                 text.style.display = 'block';
 
-                // Get the position for the halo (above the forehead)
-                const forehead = landmarks[10]; // Forehead landmark
-                const haloX = (1 - forehead.x) * video.clientWidth; // Adjust for mirrored effect
-                const haloY = forehead.y * video.clientHeight - 200; // Adjust higher above the head
-
+                // Halo position (above the forehead)
+                const forehead = landmarks[10];
+                haloX = (1 - forehead.x) * video.clientWidth;
+                haloY = forehead.y * video.clientHeight - 200;
                 halo.style.left = `${haloX}px`;
                 halo.style.top = `${haloY}px`;
 
-                // Position the text closer to the chin
+                // Text position (near chin)
                 const chin = landmarks[152];
-                const textX = (1 - chin.x) * video.clientWidth; // Adjust for mirrored effect
-                const textY = chin.y * video.clientHeight + 20; // Reduced offset to bring it closer to chin
-
+                textX = (1 - chin.x) * video.clientWidth;
+                textY = chin.y * video.clientHeight + 20;
                 text.style.left = `${textX}px`;
                 text.style.top = `${textY}px`;
             }
@@ -146,20 +140,22 @@
 
         // Capture selfie
         captureButton.addEventListener('click', () => {
-            // Set canvas size to match video dimensions
+            // Set canvas size to match video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            // Draw the video frame on the canvas
+            // Draw video frame on canvas
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Draw the halo overlay
-            const haloRect = halo.getBoundingClientRect();
-            context.drawImage(halo, haloRect.left, haloRect.top, haloRect.width, haloRect.height);
+            // Scale and draw halo overlay at calculated position
+            const haloWidth = halo.width;
+            const haloHeight = halo.height;
+            context.drawImage(halo, haloX, haloY, haloWidth, haloHeight);
 
-            // Draw the text overlay
-            const textRect = text.getBoundingClientRect();
-            context.drawImage(text, textRect.left, textRect.top, textRect.width, textRect.height);
+            // Scale and draw text overlay at calculated position
+            const textWidth = text.width;
+            const textHeight = text.height;
+            context.drawImage(text, textX, textY, textWidth, textHeight);
 
             // Save the canvas as an image
             const dataUrl = canvas.toDataURL('image/png');
