@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jovenes Misioneros!</title>
+    <title>12Click - Facelense</title>
     <!-- Favicon-->
     <link rel="shortcut icon" href="images/logo2.png">
     <style>
@@ -42,6 +42,20 @@
             left: 50%;
             transform: translate(-50%, 0);
         }
+
+        /* Button styling */
+        #captureButton {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -49,6 +63,8 @@
         <video id="video" playsinline autoplay muted></video> <!-- Added muted attribute -->
         <img id="halo" class="overlay" src="images/halo.gif" alt="Halo">
         <img id="text" class="overlay" src="images/text2.gif" alt="Text"> <!-- Change to your GIF -->
+        <button id="captureButton">Take Selfie</button>
+        <canvas id="canvas" style="display: none;"></canvas> <!-- Hidden canvas for capturing selfies -->
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
@@ -57,6 +73,9 @@
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
+        const captureButton = document.getElementById('captureButton');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
 
         // Load the face mesh model
         const faceMesh = new FaceMesh({
@@ -102,6 +121,31 @@
                 text.style.top = `${textY}px`;
             }
         }
+
+        // Capture selfie
+        captureButton.addEventListener('click', () => {
+            // Set canvas size to match video dimensions
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw the video frame on the canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Draw the halo overlay
+            const haloRect = halo.getBoundingClientRect();
+            context.drawImage(halo, haloRect.left, haloRect.top, haloRect.width, haloRect.height);
+
+            // Draw the text overlay
+            const textRect = text.getBoundingClientRect();
+            context.drawImage(text, textRect.left, textRect.top, textRect.width, textRect.height);
+
+            // Save the canvas as an image
+            const dataUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'selfie.png';
+            link.click();
+        });
     </script>
 </body>
 </html>
