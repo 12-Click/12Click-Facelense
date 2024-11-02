@@ -51,7 +51,6 @@
             font-weight: bold;
             border: none;
             border-radius: 5px;  /* Subtle rounded corners */
-            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
@@ -59,13 +58,10 @@
 
         .capture-button:hover {
             background-color: #6db0d5; /* Slightly darker blue on hover */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
-            transform: scale(1.05);
         }
 
         .capture-button:active {
             transform: scale(0.97);
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -173,24 +169,18 @@
                 // Draw the polaroid effect
                 const img = new Image();
                 img.onload = function() {
-                    // Draw a shadow effect
-                    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-                    ctx.shadowOffsetX = 5;
-                    ctx.shadowOffsetY = 5;
-                    ctx.shadowBlur = 10;
-
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
                     
-                    // Draw the top line
-                    ctx.fillStyle = "white"; // Line color changed to white
-                    ctx.fillRect(0, 0, polaroidWidth, 5); // Line height
+                    // Draw thicker top border
+                    ctx.fillStyle = "white"; // Top border color
+                    ctx.fillRect(0, 0, polaroidWidth, 10); // Top border height
 
                     // Calculate size and position for the image
                     const imgWidth = polaroidWidth - 40; // Keep some padding
                     const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
                     const offsetX = 20; // Padding from left
-                    const offsetY = 5; // Padding from top
+                    const offsetY = 10; // Padding from top (below the top border)
 
                     // Draw the image
                     ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
