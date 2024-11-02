@@ -161,8 +161,8 @@
                 // Create a polaroid effect canvas
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
-                const polaroidSize = 400; // Width and height for square photo
-                const polaroidHeight = polaroidSize + 30; // Thinner bottom border
+                const polaroidSize = 380; // Adjusted size for square photo
+                const polaroidHeight = polaroidSize + 40; // Thinner bottom border plus top line
 
                 polaroidCanvas.width = polaroidSize;
                 polaroidCanvas.height = polaroidHeight;
@@ -173,8 +173,13 @@
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, polaroidSize, polaroidHeight); // White background
                     
-                    // Draw the square image
-                    ctx.drawImage(img, 0, 0, polaroidSize, polaroidSize);
+                    // Draw the top line
+                    ctx.fillStyle = "white"; // Line color changed to white
+                    ctx.fillRect(0, 0, polaroidSize, 5); // Line height
+
+                    // Draw the smaller square image
+                    const smallerSize = polaroidSize - 20; // Making the image smaller
+                    ctx.drawImage(img, 10, 5, smallerSize, smallerSize); // Draw image with padding
                     
                     // Draw white borders on the sides
                     ctx.fillStyle = "white";
