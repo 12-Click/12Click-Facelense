@@ -67,14 +67,23 @@
             transform: scale(0.97);
         }
 
-        /* Polaroid display */
-        #polaroidDisplay {
+        /* Flash effect */
+        .flash {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none; /* Hide initially */
-            z-index: 20;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 15;
+            transition: opacity 0.1s ease-out;
+        }
+
+        /* Class to trigger flash */
+        .flash.active {
+            opacity: 0.8;
         }
 
         #successMessage {
@@ -97,8 +106,9 @@
         <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
 
-        <!-- Polaroid Display -->
-        <img id="polaroidDisplay" alt="Polaroid" />
+        <!-- Flash effect overlay -->
+        <div id="flash" class="flash"></div>
+        
         <div id="successMessage">Photo saved successfully!</div>
     </div>
 
@@ -111,7 +121,7 @@
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
         const captureButton = document.getElementById('captureButton');
-        const polaroidDisplay = document.getElementById('polaroidDisplay');
+        const flash = document.getElementById('flash');
         const successMessage = document.getElementById('successMessage');
 
         // Load the face mesh model
@@ -180,59 +190,33 @@
             }).then(canvas => {
                 const image = canvas.toDataURL('image/png');
 
-                const polaroidCanvas = document.createElement('canvas');
-                const ctx = polaroidCanvas.getContext('2d');
+                // Trigger flash effect
+                flash.classList.add('active');
+                setTimeout(() => {
+                    flash.classList.remove('active');
+                }, 100); // Flash duration
 
-                const mobileAspectRatio = 9 / 16;
-                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300);
-                const polaroidHeight = polaroidWidth / mobileAspectRatio;
+                // Show success message
+                successMessage.style.display = 'block';
 
-                polaroidCanvas.width = polaroidWidth;
-                polaroidCanvas.height = polaroidHeight;
+                // Hide success message after 2 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 2000);
 
-                const img = new Image();
-                img.onload = function() {
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight);
-
-                    ctx.fillRect(0, 0, polaroidWidth, 20);
-
-                    const imgWidth = polaroidWidth - 40;
-                    const imgHeight = imgWidth / mobileAspectRatio;
-                    const offsetX = 20;
-                    const offsetY = 20;
-
-                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight);
-
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, 30, polaroidHeight);
-                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight);
-
-                    const polaroidImage = polaroidCanvas.toDataURL('image/png');
-
-                    polaroidDisplay.src = polaroidImage;
-                    polaroidDisplay.style.display = 'block';
-
-                    successMessage.style.display = 'block';
-
-                    setTimeout(() => {
-                        polaroidDisplay.style.display = 'none';
-                        successMessage.style.display = 'none';
-                    }, 3000);
-
-                    const link = document.createElement('a');
-                    link.href = polaroidImage;
-                    link.download = 'selfie_polaroid.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                };
-                img.src = image;
+                // Trigger download of the image
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'selfie.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
             captureButton.style.display = 'block';
         }
 
+        // Show capture button when video is ready
         video.addEventListener('loadedmetadata', () => {
             captureButton.style.display = 'block';
         });
