@@ -144,33 +144,30 @@
             // Temporarily hide the capture button
             captureButton.style.display = 'none';
 
-            // Use a short timeout before taking the screenshot
-            setTimeout(() => {
-                // Get the dimensions of the screenshot container
-                const container = document.getElementById('screenshot-container');
-                const width = container.clientWidth;
-                const height = container.clientHeight;
+            // Get the dimensions of the screenshot container
+            const container = document.getElementById('screenshot-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
 
-                // Take a high-resolution screenshot with html2canvas
-                html2canvas(container, {
-                    width: width,
-                    height: height,
-                    scale: 3,  // Increase scale for better quality
-                    useCORS: true  // Ensures external images load correctly
-                }).then(canvas => {
-                    // Convert canvas content to an image and trigger download
-                    const image = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = image;
-                    link.download = 'selfie.png';
-                    document.body.appendChild(link); // Append to body to avoid click errors
-                    link.click();
-                    document.body.removeChild(link); // Clean up
+            // Take a high-resolution screenshot with html2canvas
+            html2canvas(container, {
+                width: width,
+                height: height,
+                scale: 3,  // Increase scale for better quality
+                useCORS: true  // Ensures external images load correctly
+            }).then(canvas => {
+                // Convert canvas content to an image and trigger download
+                const image = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'selfie.png';
+                document.body.appendChild(link); // Append to body to avoid click errors
+                link.click();
+                document.body.removeChild(link); // Clean up
 
-                    // Show the capture button again after a very brief moment
-                    captureButton.style.display = 'block';
-                });
-            }, 0);  // Set the delay to 0 to execute immediately
+                // Show the capture button again after a very brief moment
+                captureButton.style.display = 'block';
+            });
         }
     </script>
 </body>
