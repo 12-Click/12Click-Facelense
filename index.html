@@ -161,30 +161,54 @@
                 // Create a polaroid effect canvas
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
-                const polaroidSize = 200; // Adjusted size for square photo
-                const polaroidHeight = polaroidSize + 40; // Thinner bottom border plus top line
 
-                polaroidCanvas.width = polaroidSize;
+                // Adjust polaroid size to match mobile screen aspect ratio
+                const mobileAspectRatio = 9 / 16; // Typical mobile screen ratio
+                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300); // Set max width to 90% of window or 300px
+                const polaroidHeight = polaroidWidth / mobileAspectRatio; // Maintain mobile aspect ratio
+
+                polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
 
                 // Draw the polaroid effect
                 const img = new Image();
                 img.onload = function() {
+                    // Draw a shadow effect
+                    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+                    ctx.shadowOffsetX = 5;
+                    ctx.shadowOffsetY = 5;
+                    ctx.shadowBlur = 10;
+
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidSize, polaroidHeight); // White background
+                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
                     
                     // Draw the top line
                     ctx.fillStyle = "white"; // Line color changed to white
-                    ctx.fillRect(0, 0, polaroidSize, 5); // Line height
+                    ctx.fillRect(0, 0, polaroidWidth, 5); // Line height
 
-                    // Draw the smaller square image
-                    const smallerSize = polaroidSize - 20; // Making the image smaller
-                    ctx.drawImage(img, 10, 5, smallerSize, smallerSize); // Draw image with padding
+                    // Calculate size and position for the image
+                    const imgWidth = polaroidWidth - 20; // Keep some padding
+                    const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
+                    const offsetX = 10; // Padding from left
+                    const offsetY = 5; // Padding from top
+
+                    // Draw the image
+                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
                     
                     // Draw white borders on the sides
                     ctx.fillStyle = "white";
                     ctx.fillRect(0, 0, 10, polaroidHeight); // Left border
-                    ctx.fillRect(polaroidSize - 10, 0, 10, polaroidHeight); // Right border
+                    ctx.fillRect(polaroidWidth - 10, 0, 10, polaroidHeight); // Right border
+
+                    // Optional: Add a bottom border with a small caption area
+                    ctx.fillStyle = "white"; // Bottom border
+                    ctx.fillRect(0, imgHeight + offsetY + 5, polaroidWidth, 20); // Bottom caption area
+
+                    // Draw caption text if needed
+                    ctx.fillStyle = "black"; // Caption color
+                    ctx.font = "16px Arial"; // Font style and size
+                    ctx.textAlign = "center"; // Center text
+                    ctx.fillText("Your Caption Here", polaroidWidth / 2, imgHeight + offsetY + 20); // Example caption text
 
                     const polaroidImage = polaroidCanvas.toDataURL('image/png');
 
