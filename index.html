@@ -38,24 +38,40 @@
             left: 50%;
             transform: translate(-50%, 0);
         }
+
+        /* Style for the capture button */
+        .capture-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="screenshot-container">
         <video id="video" playsinline autoplay muted></video>
         <img id="halo" class="overlay" src="images/200.gif" alt="Halo">
         <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
-        <canvas id="canvas" style="display: none;"></canvas>
+        
+        <!-- Capture Button -->
+        <button class="capture-button" onclick="captureSelfie()">Capture Selfie</button>
     </div>
     
+    <!-- Include html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
     <script>
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
 
         // Load the face mesh model
         const faceMesh = new FaceMesh({
@@ -105,6 +121,20 @@
                 halo.style.display = 'none';
                 text.style.display = 'none';
             }
+        }
+
+        // Capture screenshot using html2canvas
+        function captureSelfie() {
+            const screenshotContainer = document.getElementById('screenshot-container');
+            
+            html2canvas(screenshotContainer).then(canvas => {
+                // Convert canvas content to an image and trigger download
+                const image = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'selfie.png';
+                link.click();
+            });
         }
     </script>
 </body>
