@@ -67,25 +67,6 @@
             transform: scale(0.97);
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
-
-        /* Style for the polaroid */
-        .polaroid {
-            position: relative;
-            width: 80%; /* Width of the polaroid */
-            max-width: 400px; /* Max width to maintain size */
-            margin: 20px auto; /* Center the polaroid */
-            background: white;
-            border: 10px solid #eee; /* Polaroid border */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: none; /* Initially hidden */
-        }
-
-        .polaroid img {
-            width: 100%; /* Full width for the image */
-            display: block; /* Remove bottom space */
-        }
-
     </style>
 </head>
 <body>
@@ -96,13 +77,8 @@
         
         <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
-        
-        <!-- Polaroid for captured image -->
-        <div id="polaroid" class="polaroid">
-            <img id="capturedImage" alt="Captured Selfie">
-        </div>
     </div>
-    
+
     <!-- Include html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
@@ -111,8 +87,7 @@
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
-        const polaroid = document.getElementById('polaroid');
-        const capturedImage = document.getElementById('capturedImage');
+        const captureButton = document.getElementById('captureButton');
 
         // Load the face mesh model
         const faceMesh = new FaceMesh({
@@ -166,6 +141,9 @@
 
         // Capture screenshot using html2canvas
         function captureSelfie() {
+            // Temporarily hide the capture button
+            captureButton.style.display = 'none';
+
             const container = document.getElementById('screenshot-container');
             const width = container.clientWidth;
             const height = container.clientHeight;
@@ -179,10 +157,40 @@
             }).then(canvas => {
                 // Convert canvas content to an image
                 const image = canvas.toDataURL('image/png');
-                capturedImage.src = image; // Set the src of the captured image
 
-                // Show the polaroid with the captured image
-                polaroid.style.display = 'block';
+                // Create a polaroid effect canvas
+                const polaroidCanvas = document.createElement('canvas');
+                const ctx = polaroidCanvas.getContext('2d');
+                const polaroidWidth = 400;
+                const polaroidHeight = 500;
+
+                polaroidCanvas.width = polaroidWidth;
+                polaroidCanvas.height = polaroidHeight;
+
+                // Draw the image with a border for the polaroid effect
+                const img = new Image();
+                img.onload = function() {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
+                    ctx.drawImage(img, 0, 0, polaroidWidth, polaroidHeight - 100); // Main image
+                    ctx.font = "20px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.textAlign = "center";
+                    ctx.fillText("Selfie", polaroidWidth / 2, polaroidHeight - 20); // Add label to the bottom
+                    const polaroidImage = polaroidCanvas.toDataURL('image/png');
+
+                    // Trigger download of the polaroid image
+                    const link = document.createElement('a');
+                    link.href = polaroidImage;
+                    link.download = 'selfie_polaroid.png';
+                    document.body.appendChild(link); // Append to body to avoid click errors
+                    link.click();
+                    document.body.removeChild(link); // Clean up
+                };
+                img.src = image; // Set the source of the image
+            }).finally(() => {
+                // Show the capture button again after capturing the selfie
+                captureButton.style.display = 'block';
             });
         }
     </script>
