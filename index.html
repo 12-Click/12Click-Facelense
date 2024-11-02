@@ -54,6 +54,7 @@
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
+            display: none; /* Hide the button initially */
         }
 
         .capture-button:hover {
@@ -62,6 +63,26 @@
 
         .capture-button:active {
             transform: scale(0.97);
+        }
+
+        /* Polaroid display */
+        #polaroidDisplay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* Hide initially */
+            z-index: 20;
+        }
+
+        #successMessage {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            display: none; /* Hide initially */
         }
     </style>
 </head>
@@ -73,6 +94,10 @@
         
         <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
+
+        <!-- Polaroid Display -->
+        <img id="polaroidDisplay" alt="Polaroid" />
+        <div id="successMessage">Photo saved successfully!</div>
     </div>
 
     <!-- Include html2canvas -->
@@ -84,6 +109,8 @@
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
         const captureButton = document.getElementById('captureButton');
+        const polaroidDisplay = document.getElementById('polaroidDisplay');
+        const successMessage = document.getElementById('successMessage');
 
         // Load the face mesh model
         const faceMesh = new FaceMesh({
@@ -174,23 +201,36 @@
                     
                     // Draw thicker top border
                     ctx.fillStyle = "white"; // Top border color
-                    ctx.fillRect(0, 0, polaroidWidth, 10); // Top border height
+                    ctx.fillRect(0, 0, polaroidWidth, 20); // Top border height (thicker)
 
                     // Calculate size and position for the image
                     const imgWidth = polaroidWidth - 40; // Keep some padding
                     const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
                     const offsetX = 20; // Padding from left
-                    const offsetY = 10; // Padding from top (below the top border)
+                    const offsetY = 20; // Padding from top (below the top border)
 
                     // Draw the image
                     ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
                     
                     // Draw thicker white borders on the sides
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, 20, polaroidHeight); // Left border
-                    ctx.fillRect(polaroidWidth - 20, 0, 20, polaroidHeight); // Right border
+                    ctx.fillRect(0, 0, 30, polaroidHeight); // Left border (thicker)
+                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight); // Right border (thicker)
 
                     const polaroidImage = polaroidCanvas.toDataURL('image/png');
+
+                    // Show the polaroid image on the live feed
+                    polaroidDisplay.src = polaroidImage;
+                    polaroidDisplay.style.display = 'block';
+
+                    // Show success message
+                    successMessage.style.display = 'block';
+
+                    // Hide the polaroid and message after 3 seconds
+                    setTimeout(() => {
+                        polaroidDisplay.style.display = 'none';
+                        successMessage.style.display = 'none';
+                    }, 3000);
 
                     // Trigger download of the polaroid image
                     const link = document.createElement('a');
@@ -198,14 +238,19 @@
                     link.download = 'selfie_polaroid.png';
                     document.body.appendChild(link); // Append to body to avoid click errors
                     link.click();
-                    document.body.removeChild(link); // Clean up
+                    document.body.removeChild(link); // Remove the link after downloading
                 };
                 img.src = image; // Set the source of the image
-            }).finally(() => {
-                // Show the capture button again after capturing the selfie
-                captureButton.style.display = 'block';
             });
+
+            // Show the capture button again after capturing
+            captureButton.style.display = 'block';
         }
+
+        // Show capture button when video is ready
+        video.addEventListener('loadedmetadata', () => {
+            captureButton.style.display = 'block'; // Show the button when video is ready
+        });
     </script>
 </body>
 </html>
