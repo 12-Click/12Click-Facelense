@@ -187,28 +187,18 @@
                     ctx.fillRect(0, 0, polaroidWidth, 5); // Line height
 
                     // Calculate size and position for the image
-                    const imgWidth = polaroidWidth - 20; // Keep some padding
+                    const imgWidth = polaroidWidth - 40; // Keep some padding
                     const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
-                    const offsetX = 10; // Padding from left
+                    const offsetX = 20; // Padding from left
                     const offsetY = 5; // Padding from top
 
                     // Draw the image
                     ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
                     
-                    // Draw white borders on the sides
+                    // Draw thicker white borders on the sides
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, 10, polaroidHeight); // Left border
-                    ctx.fillRect(polaroidWidth - 10, 0, 10, polaroidHeight); // Right border
-
-                    // Optional: Add a bottom border with a small caption area
-                    ctx.fillStyle = "white"; // Bottom border
-                    ctx.fillRect(0, imgHeight + offsetY + 5, polaroidWidth, 20); // Bottom caption area
-
-                    // Draw caption text if needed
-                    ctx.fillStyle = "black"; // Caption color
-                    ctx.font = "16px Arial"; // Font style and size
-                    ctx.textAlign = "center"; // Center text
-                    ctx.fillText("Your Caption Here", polaroidWidth / 2, imgHeight + offsetY + 20); // Example caption text
+                    ctx.fillRect(0, 0, 20, polaroidHeight); // Left border
+                    ctx.fillRect(polaroidWidth - 20, 0, 20, polaroidHeight); // Right border
 
                     const polaroidImage = polaroidCanvas.toDataURL('image/png');
 
