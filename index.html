@@ -44,29 +44,25 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            padding: 6px 12px;
-            background-color: #87CEEB;
+            padding: 6px 12px;  /* Smaller padding */
+            background-color: #87CEEB; /* Light blue color */
             color: white;
-            font-size: 14px;
+            font-size: 14px;  /* Smaller font size */
             font-weight: bold;
             border: none;
-            border-radius: 5px;
-            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;  /* Subtle rounded corners */
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
-            display: none; /* Hidden until video loads */
+            display: none; /* Hide the button initially */
         }
 
         .capture-button:hover {
-            background-color: #6db0d5;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
-            transform: scale(1.05);
+            background-color: #6db0d5; /* Slightly darker blue on hover */
         }
 
         .capture-button:active {
             transform: scale(0.97);
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         /* Polaroid display */
@@ -75,24 +71,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            display: none;
-            z-index: 15;
-            box-shadow: none;
+            display: none; /* Hide initially */
+            z-index: 20;
         }
 
-        /* Success message */
         #successMessage {
             position: absolute;
-            top: 80%;
+            top: 10px;
             left: 50%;
-            transform: translate(-50%, 0);
-            background-color: rgba(0, 0, 0, 0.7);
+            transform: translateX(-50%);
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
             font-size: 16px;
-            display: none;
-            z-index: 20;
+            display: none; /* Hide initially */
         }
     </style>
 </head>
@@ -105,8 +95,8 @@
         <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
 
-        <!-- Polaroid Display and Success Message -->
-        <img id="polaroidDisplay" alt="Polaroid">
+        <!-- Polaroid Display -->
+        <img id="polaroidDisplay" alt="Polaroid" />
         <div id="successMessage">Photo saved successfully!</div>
     </div>
 
@@ -141,17 +131,14 @@
         });
         camera.start();
 
-        // Show capture button when video is ready
-        video.addEventListener('loadedmetadata', () => {
-            captureButton.style.display = 'block';
-        });
-
         // Track positions of overlays
         let haloX, haloY, textX, textY;
 
         function onResults(results) {
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                 const landmarks = results.multiFaceLandmarks[0];
+
+                // Show overlays only when a face is detected
                 halo.style.display = 'block';
                 text.style.display = 'block';
 
@@ -169,75 +156,101 @@
                 text.style.left = `${textX}px`;
                 text.style.top = `${textY}px`;
             } else {
+                // Hide overlays if no face is detected
                 halo.style.display = 'none';
                 text.style.display = 'none';
             }
         }
 
+        // Capture screenshot using html2canvas
         function captureSelfie() {
+            // Temporarily hide the capture button
             captureButton.style.display = 'none';
 
             const container = document.getElementById('screenshot-container');
             const width = container.clientWidth;
             const height = container.clientHeight;
 
+            // Take a high-resolution screenshot with html2canvas
             html2canvas(container, {
                 width: width,
                 height: height,
-                scale: 3,
-                useCORS: true
+                scale: 3,  // Increase scale for better quality
+                useCORS: true  // Ensures external images load correctly
             }).then(canvas => {
+                // Convert canvas content to an image
                 const image = canvas.toDataURL('image/png');
-                
-                // Create polaroid effect
+
+                // Create a polaroid effect canvas
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
-                
-                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300);
-                const polaroidHeight = polaroidWidth * (9 / 16);
+
+                // Adjust polaroid size to match mobile screen aspect ratio
+                const mobileAspectRatio = 9 / 16; // Typical mobile screen ratio
+                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300); // Set max width to 90% of window or 300px
+                const polaroidHeight = polaroidWidth / mobileAspectRatio; // Maintain mobile aspect ratio
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
 
+                // Draw the polaroid effect
                 const img = new Image();
                 img.onload = function() {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight);
+                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
+                    
+                    // Draw thicker top border
+                    ctx.fillStyle = "white"; // Top border color
+                    ctx.fillRect(0, 0, polaroidWidth, 20); // Top border height (thicker)
 
+                    // Calculate size and position for the image
+                    const imgWidth = polaroidWidth - 40; // Keep some padding
+                    const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
+                    const offsetX = 20; // Padding from left
+                    const offsetY = 20; // Padding from top (below the top border)
+
+                    // Draw the image
+                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
+                    
+                    // Draw thicker white borders on the sides
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidWidth, 30); // Thicker top border
-                    ctx.fillRect(0, polaroidHeight - 50, polaroidWidth, 50); // Thicker bottom border
-                    ctx.fillRect(0, 0, 30, polaroidHeight); // Thicker left border
-                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight); // Thicker right border
+                    ctx.fillRect(0, 0, 30, polaroidHeight); // Left border (thicker)
+                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight); // Right border (thicker)
 
-                    const imgWidth = polaroidWidth - 60;
-                    const imgHeight = imgWidth / (9 / 16);
-                    const offsetX = 30;
-                    const offsetY = 30;
+                    const polaroidImage = polaroidCanvas.toDataURL('image/png');
 
-                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight);
-
-                    polaroidDisplay.src = polaroidCanvas.toDataURL('image/png');
+                    // Show the polaroid image on the live feed
+                    polaroidDisplay.src = polaroidImage;
                     polaroidDisplay.style.display = 'block';
+
+                    // Show success message
                     successMessage.style.display = 'block';
 
+                    // Hide the polaroid and message after 3 seconds
                     setTimeout(() => {
                         polaroidDisplay.style.display = 'none';
                         successMessage.style.display = 'none';
                     }, 3000);
 
+                    // Trigger download of the polaroid image
                     const link = document.createElement('a');
-                    link.href = polaroidDisplay.src;
+                    link.href = polaroidImage;
                     link.download = 'selfie_polaroid.png';
-                    document.body.appendChild(link);
+                    document.body.appendChild(link); // Append to body to avoid click errors
                     link.click();
-                    document.body.removeChild(link);
+                    document.body.removeChild(link); // Remove the link after downloading
                 };
-                img.src = image;
-            }).finally(() => {
-                captureButton.style.display = 'block';
+                img.src = image; // Set the source of the image
             });
+
+            // Show the capture button again after capturing
+            captureButton.style.display = 'block';
         }
+
+        // Show capture button when video is ready
+        video.addEventListener('loadedmetadata', () => {
+            captureButton.style.display = 'block'; // Show the button when video is ready
+        });
     </script>
 </body>
 </html>
