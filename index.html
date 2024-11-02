@@ -67,6 +67,27 @@
             transform: scale(0.97);
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
+
+        /* Style for the polaroid */
+        .polaroid {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* Width of the polaroid */
+            max-width: 400px; /* Max width to maintain size */
+            background: white;
+            border: 10px solid #eee; /* Polaroid border */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none; /* Initially hidden */
+        }
+
+        .polaroid img {
+            width: 100%; /* Full width for the image */
+            display: block; /* Remove bottom space */
+        }
+
     </style>
 </head>
 <body>
@@ -77,6 +98,11 @@
         
         <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
+        
+        <!-- Polaroid for captured image -->
+        <div id="polaroid" class="polaroid">
+            <img id="capturedImage" alt="Captured Selfie">
+        </div>
     </div>
     
     <!-- Include html2canvas -->
@@ -87,7 +113,8 @@
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
-        const captureButton = document.getElementById('captureButton');
+        const polaroid = document.getElementById('polaroid');
+        const capturedImage = document.getElementById('capturedImage');
 
         // Load the face mesh model
         const faceMesh = new FaceMesh({
@@ -139,12 +166,8 @@
             }
         }
 
-        // Capture screenshot using html2canvas with enhanced quality
+        // Capture screenshot using html2canvas
         function captureSelfie() {
-            // Temporarily hide the capture button
-            captureButton.style.display = 'none';
-
-            // Get the dimensions of the screenshot container
             const container = document.getElementById('screenshot-container');
             const width = container.clientWidth;
             const height = container.clientHeight;
@@ -156,17 +179,12 @@
                 scale: 3,  // Increase scale for better quality
                 useCORS: true  // Ensures external images load correctly
             }).then(canvas => {
-                // Convert canvas content to an image and trigger download
+                // Convert canvas content to an image
                 const image = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = image;
-                link.download = 'selfie.png';
-                document.body.appendChild(link); // Append to body to avoid click errors
-                link.click();
-                document.body.removeChild(link); // Clean up
+                capturedImage.src = image; // Set the src of the captured image
 
-                // Show the capture button again after a very brief moment
-                captureButton.style.display = 'block';
+                // Show the polaroid with the captured image
+                polaroid.style.display = 'block';
             });
         }
     </script>
