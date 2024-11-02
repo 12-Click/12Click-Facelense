@@ -146,15 +146,15 @@
 
             // Wait 500 milliseconds before taking the screenshot
             setTimeout(() => {
-                // Get actual dimensions of video to avoid shrinking
-                const videoWidth = video.clientWidth;
-                const videoHeight = video.clientHeight;
+                // Get actual dimensions of the screen
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
 
                 // Take a high-resolution screenshot with html2canvas
                 html2canvas(document.getElementById('screenshot-container'), {
-                    scale: 3,  // Increase scale for better quality
-                    width: videoWidth * 2,  // Higher width for better quality
-                    height: videoHeight * 2,  // Higher height for better quality
+                    scale: 2,  // Increase scale for better quality
+                    width: screenWidth,  // Match screen width
+                    height: screenHeight,  // Match screen height
                     useCORS: true  // Ensures external images load correctly
                 }).then(canvas => {
                     // Convert canvas content to an image and trigger download
