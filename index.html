@@ -44,13 +44,13 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            padding: 6px 12px;
-            background-color: #87CEEB;
+            padding: 6px 12px;  /* Smaller padding */
+            background-color: #87CEEB; /* Light blue color */
             color: white;
-            font-size: 14px;
+            font-size: 14px;  /* Smaller font size */
             font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 5px;  /* Subtle rounded corners */
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
@@ -58,7 +58,7 @@
         }
 
         .capture-button:hover {
-            background-color: #6db0d5;
+            background-color: #6db0d5; /* Slightly darker blue on hover */
         }
 
         .capture-button:active {
@@ -175,9 +175,10 @@
             html2canvas(container, {
                 width: width,
                 height: height,
-                scale: 3,
-                useCORS: true
+                scale: 3,  // Increase scale for better quality
+                useCORS: true  // Ensures external images load correctly
             }).then(canvas => {
+                // Convert canvas content to an image
                 const image = canvas.toDataURL('image/png');
 
                 // Create a polaroid effect canvas
@@ -185,9 +186,9 @@
                 const ctx = polaroidCanvas.getContext('2d');
 
                 // Adjust polaroid size to match mobile screen aspect ratio
-                const mobileAspectRatio = 9 / 16;
-                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300);
-                const polaroidHeight = polaroidWidth / mobileAspectRatio;
+                const mobileAspectRatio = 9 / 16; // Typical mobile screen ratio
+                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300); // Set max width to 90% of window or 300px
+                const polaroidHeight = polaroidWidth / mobileAspectRatio; // Maintain mobile aspect ratio
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -196,28 +197,25 @@
                 const img = new Image();
                 img.onload = function() {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight);
+                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
+                    
+                    // Draw thicker top border
+                    ctx.fillStyle = "white"; // Top border color
+                    ctx.fillRect(0, 0, polaroidWidth, 20); // Top border height (thicker)
 
-                    // Draw thicker top and bottom borders
-                    ctx.fillStyle = "white"; 
-                    const topBorderHeight = 40; // Increased top border height
-                    const bottomBorderHeight = 60; // Increased bottom border height
-                    ctx.fillRect(0, 0, polaroidWidth, topBorderHeight); // Top border
-                    ctx.fillRect(0, polaroidHeight - bottomBorderHeight, polaroidWidth, bottomBorderHeight); // Bottom border
-
-                    // Calculate size and position for the image, accounting for thicker borders
-                    const imgWidth = polaroidWidth - 40;
-                    const imgHeight = imgWidth / mobileAspectRatio;
-                    const offsetX = 20;
-                    const offsetY = topBorderHeight;
+                    // Calculate size and position for the image
+                    const imgWidth = polaroidWidth - 40; // Keep some padding
+                    const imgHeight = imgWidth / mobileAspectRatio; // Maintain aspect ratio for the image
+                    const offsetX = 20; // Padding from left
+                    const offsetY = 20; // Padding from top (below the top border)
 
                     // Draw the image
-                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight);
-
-                    // Draw left and right borders if needed
-                    const sideBorderWidth = 30;
-                    ctx.fillRect(0, 0, sideBorderWidth, polaroidHeight); // Left border
-                    ctx.fillRect(polaroidWidth - sideBorderWidth, 0, sideBorderWidth, polaroidHeight); // Right border
+                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight); // Draw image with padding
+                    
+                    // Draw thicker white borders on the sides
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, 30, polaroidHeight); // Left border (thicker)
+                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight); // Right border (thicker)
 
                     const polaroidImage = polaroidCanvas.toDataURL('image/png');
 
@@ -238,11 +236,11 @@
                     const link = document.createElement('a');
                     link.href = polaroidImage;
                     link.download = 'selfie_polaroid.png';
-                    document.body.appendChild(link);
+                    document.body.appendChild(link); // Append to body to avoid click errors
                     link.click();
-                    document.body.removeChild(link);
+                    document.body.removeChild(link); // Remove the link after downloading
                 };
-                img.src = image;
+                img.src = image; // Set the source of the image
             });
 
             // Show the capture button again after capturing
@@ -251,7 +249,7 @@
 
         // Show capture button when video is ready
         video.addEventListener('loadedmetadata', () => {
-            captureButton.style.display = 'block';
+            captureButton.style.display = 'block'; // Show the button when video is ready
         });
     </script>
 </body>
