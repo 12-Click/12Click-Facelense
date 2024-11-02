@@ -38,33 +38,6 @@
             left: 50%;
             transform: translate(-50%, 0);
         }
-
-        #captureButton {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #ffffff;
-            background: linear-gradient(145deg, #ff7e5f, #feb47b);
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        #captureButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        #captureButton:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        }
     </style>
 </head>
 <body>
@@ -72,7 +45,6 @@
         <video id="video" playsinline autoplay muted></video>
         <img id="halo" class="overlay" src="images/200.gif" alt="Halo">
         <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
-        <button id="captureButton">Take Selfie</button>
         <canvas id="canvas" style="display: none;"></canvas>
     </div>
     
@@ -82,7 +54,6 @@
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
-        const captureButton = document.getElementById('captureButton');
         const canvas = document.getElementById('canvas');
         const context = canvas.getContext('2d');
 
@@ -105,13 +76,6 @@
         });
         camera.start();
 
-        // Show the button when fully loaded
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                captureButton.style.display = 'block';
-            }, 500); // Optional: slight delay to ensure readiness
-        });
-
         // Track positions of overlays
         let haloX, haloY, textX, textY;
 
@@ -119,7 +83,7 @@
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                 const landmarks = results.multiFaceLandmarks[0];
 
-                // Show overlays after detecting the face
+                // Show overlays only when a face is detected
                 halo.style.display = 'block';
                 text.style.display = 'block';
 
@@ -136,35 +100,12 @@
                 textY = chin.y * video.clientHeight + 20;
                 text.style.left = `${textX}px`;
                 text.style.top = `${textY}px`;
+            } else {
+                // Hide overlays if no face is detected
+                halo.style.display = 'none';
+                text.style.display = 'none';
             }
         }
-
-        // Capture selfie
-        captureButton.addEventListener('click', () => {
-            // Set canvas size to match video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Draw the video frame
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Draw halo overlay at calculated position
-            const haloWidth = halo.width;
-            const haloHeight = halo.height;
-            context.drawImage(halo, haloX, haloY, haloWidth, haloHeight);
-
-            // Draw text overlay at calculated position
-            const textWidth = text.width;
-            const textHeight = text.height;
-            context.drawImage(text, textX, textY, textWidth, textHeight);
-
-            // Save the canvas as an image
-            const dataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = 'selfie.png';
-            link.click();
-        });
     </script>
 </body>
 </html>
