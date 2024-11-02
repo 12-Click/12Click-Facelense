@@ -39,18 +39,33 @@
             transform: translate(-50%, 0);
         }
 
-        /* Style for the capture button */
+        /* Enhanced Style for the capture button */
         .capture-button {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: black;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50; /* Green color */
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .capture-button:hover {
+            background-color: #45a049;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.35);
+            transform: scale(1.05);
+        }
+
+        .capture-button:active {
+            transform: scale(0.98);
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -129,9 +144,15 @@
             // Temporarily hide the capture button
             captureButton.style.display = 'none';
 
+            // Get actual dimensions of video to avoid shrinking
+            const videoWidth = video.clientWidth;
+            const videoHeight = video.clientHeight;
+
             // Take a high-resolution screenshot with html2canvas
             html2canvas(document.getElementById('screenshot-container'), {
-                scale: 2  // Increase scale for better quality
+                scale: 2,  // Increase scale for better quality
+                width: videoWidth,
+                height: videoHeight
             }).then(canvas => {
                 // Convert canvas content to an image and trigger download
                 const image = canvas.toDataURL('image/png');
