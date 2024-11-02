@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jovenes Misioneros!</title>
-    <!-- Favicon-->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="images/logo2.png">
     <style>
         body {
@@ -37,7 +37,7 @@
             transform: translate(-50%, 0);
         }
 
-        #captureButton {
+        #screenshotMessage {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -46,23 +46,11 @@
             font-weight: bold;
             color: #ffffff;
             background: linear-gradient(145deg, #ff7e5f, #feb47b);
-            border: none;
             border-radius: 20px;
-            cursor: pointer;
-            display: none;
             z-index: 10;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        #captureButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        #captureButton:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+            display: none; /* Hidden initially */
         }
     </style>
 </head>
@@ -71,7 +59,7 @@
         <video id="video" playsinline autoplay muted></video>
         <img id="halo" class="overlay" src="images/200.gif" alt="Halo">
         <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
-        <button id="captureButton">Take Selfie</button>
+        <div id="screenshotMessage">Take a screenshot to save your selfie!</div>
         <canvas id="canvas" style="display: none;"></canvas>
     </div>
     
@@ -81,7 +69,7 @@
         const video = document.getElementById('video');
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
-        const captureButton = document.getElementById('captureButton');
+        const screenshotMessage = document.getElementById('screenshotMessage');
         const canvas = document.getElementById('canvas');
         const context = canvas.getContext('2d');
 
@@ -104,10 +92,10 @@
         });
         camera.start();
 
-        // Show the button when fully loaded
+        // Show the screenshot message when fully loaded
         window.addEventListener('load', () => {
             setTimeout(() => {
-                captureButton.style.display = 'block';
+                screenshotMessage.style.display = 'block';
             }, 500); // Optional: slight delay to ensure readiness
         });
 
@@ -138,8 +126,8 @@
             }
         }
 
-        // Capture selfie
-        captureButton.addEventListener('click', () => {
+        // Function to capture and save the screenshot
+        function captureScreenshot() {
             // Set canvas size to match video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -163,6 +151,16 @@
             link.href = dataUrl;
             link.download = 'selfie.png';
             link.click();
+
+            // Hide the screenshot message after taking a screenshot
+            screenshotMessage.style.display = 'none';
+        }
+
+        // Listen for 's' key press to trigger screenshot
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 's' || event.key === 'S') {
+                captureScreenshot();
+            }
         });
     </script>
 </body>
