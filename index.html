@@ -161,22 +161,26 @@
                 // Create a polaroid effect canvas
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
-                const polaroidWidth = 400;
-                const polaroidHeight = 500;
+                const polaroidSize = 400; // Width and height for square photo
+                const polaroidHeight = polaroidSize + 30; // Thinner bottom border
 
-                polaroidCanvas.width = polaroidWidth;
+                polaroidCanvas.width = polaroidSize;
                 polaroidCanvas.height = polaroidHeight;
 
-                // Draw the image with a border for the polaroid effect
+                // Draw the polaroid effect
                 const img = new Image();
                 img.onload = function() {
                     ctx.fillStyle = "white";
-                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight); // White background
-                    ctx.drawImage(img, 0, 0, polaroidWidth, polaroidHeight - 100); // Main image
-                    ctx.font = "20px Arial";
-                    ctx.fillStyle = "black";
-                    ctx.textAlign = "center";
-                    ctx.fillText("Selfie", polaroidWidth / 2, polaroidHeight - 20); // Add label to the bottom
+                    ctx.fillRect(0, 0, polaroidSize, polaroidHeight); // White background
+                    
+                    // Draw the square image
+                    ctx.drawImage(img, 0, 0, polaroidSize, polaroidSize);
+                    
+                    // Draw white borders on the sides
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, 10, polaroidHeight); // Left border
+                    ctx.fillRect(polaroidSize - 10, 0, 10, polaroidHeight); // Right border
+
                     const polaroidImage = polaroidCanvas.toDataURL('image/png');
 
                     // Trigger download of the polaroid image
