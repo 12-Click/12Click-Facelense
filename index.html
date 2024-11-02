@@ -39,32 +39,32 @@
             transform: translate(-50%, 0);
         }
 
-        /* Enhanced Style for the capture button */
+        /* Style for the capture button */
         .capture-button {
             position: absolute;
             top: 20px;
             right: 20px;
-            padding: 10px 15px;
-            background-color: #4CAF50; /* Green color */
+            padding: 6px 12px;  /* Smaller padding */
+            background-color: #87CEEB; /* Light blue color */
             color: white;
-            font-size: 16px;
+            font-size: 14px;  /* Smaller font size */
             font-weight: bold;
             border: none;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;  /* Subtle rounded corners */
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
         }
 
         .capture-button:hover {
-            background-color: #45a049;
-            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.35);
+            background-color: #6db0d5; /* Slightly darker blue on hover */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
             transform: scale(1.05);
         }
 
         .capture-button:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
@@ -76,7 +76,7 @@
         <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
         
         <!-- Capture Button -->
-        <button id="captureButton" class="capture-button" onclick="captureSelfie()">Capture Selfie</button>
+        <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
     </div>
     
     <!-- Include html2canvas -->
