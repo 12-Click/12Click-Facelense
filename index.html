@@ -174,9 +174,9 @@
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
-                // Set Polaroid canvas dimensions with thicker borders
-                const polaroidWidth = originalCanvas.width + 120; // 60px on each side
-                const polaroidHeight = originalCanvas.height + 200; // 80px on top, 120px on bottom
+                // Set Polaroid canvas dimensions with much thicker top and bottom borders
+                const polaroidWidth = originalCanvas.width + 80; // 40px on each side
+                const polaroidHeight = originalCanvas.height + 320; // 120px on top, 200px on bottom
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -186,7 +186,7 @@
                 ctx.fillRect(0, 0, polaroidWidth, polaroidHeight);
 
                 // Draw the captured screenshot onto the Polaroid
-                ctx.drawImage(originalCanvas, 60, 80); // Positioned with thicker borders
+                ctx.drawImage(originalCanvas, 40, 120); // Position with thicker top and bottom borders
 
                 // Show success message
                 successMessage.style.display = 'block';
