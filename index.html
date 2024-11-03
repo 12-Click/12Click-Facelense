@@ -27,11 +27,12 @@
             object-fit: cover;
             transform: scaleX(-1); /* Mirror the video for a selfie effect */
             display: block;
+            pointer-events: none; /* Prevent interaction with video */
         }
 
         .overlay {
             position: absolute;
-            pointer-events: none;
+            pointer-events: none; /* Prevent interaction with overlays */
             display: none; /* Initially hide overlays */
         }
 
