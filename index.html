@@ -188,8 +188,6 @@
                 scale: 3,
                 useCORS: true
             }).then(canvas => {
-                const image = canvas.toDataURL('image/png');
-
                 // Trigger flash effect
                 flash.classList.add('active');
                 setTimeout(() => {
@@ -204,13 +202,16 @@
                     successMessage.style.display = 'none';
                 }, 2000);
 
-                // Trigger download of the image
-                const link = document.createElement('a');
-                link.href = image;
-                link.download = 'selfie.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Trigger download of the image using toBlob
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'selfie.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href); // Clean up
+                }, 'image/png');
             });
 
             captureButton.style.display = 'block';
@@ -222,4 +223,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
