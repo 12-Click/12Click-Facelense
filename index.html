@@ -4,50 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jovenes Misioneros!</title>
-    <!-- Favicon -->
     <link rel="shortcut icon" href="images/logo2.png">
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background: black;
-            touch-action: none; /* Prevent touch interactions on the body */
+            touch-action: none;
         }
 
         .container {
             position: relative;
             width: 100vw;
             height: 100vh;
-            touch-action: none; /* Prevent scrolling/zooming within container */
+            touch-action: none;
         }
 
         video {
             width: 100vw;
             height: 100vh;
             object-fit: cover;
-            transform: scaleX(-1); /* Mirror the video for a selfie effect */
+            transform: scaleX(-1);
             display: block;
         }
 
         .overlay {
             position: absolute;
             pointer-events: none;
-            display: none; /* Initially hide overlays */
+            display: none;
         }
 
         #halo, #text {
-            width: 50%; /* Adjust sizes as needed */
+            width: 50%;
             left: 50%;
             transform: translate(-50%, 0);
         }
 
-        /* Style for the capture button */
         .capture-button {
             position: absolute;
             top: 20px;
             right: 20px;
             padding: 6px 12px;
-            background-color: #87CEEB; /* Light blue color */
+            background-color: #87CEEB;
             color: white;
             font-size: 14px;
             font-weight: bold;
@@ -56,34 +54,24 @@
             cursor: pointer;
             z-index: 10;
             transition: all 0.3s ease;
-            display: none; /* Hide the button initially */
+            display: none;
         }
 
         .capture-button:hover {
-            background-color: #6db0d5; /* Slightly darker blue on hover */
+            background-color: #6db0d5;
         }
 
         .capture-button:active {
             transform: scale(0.97);
         }
 
-        /* Flash effect */
-        .flash {
+        #polaroidDisplay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 15;
-            transition: opacity 0.1s ease-out;
-        }
-
-        /* Class to trigger flash */
-        .flash.active {
-            opacity: 0.8;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 20;
         }
 
         #successMessage {
@@ -93,7 +81,19 @@
             transform: translateX(-50%);
             color: white;
             font-size: 16px;
-            display: none; /* Hide initially */
+            display: none;
+        }
+
+        /* Flash effect */
+        .flash {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0.6;
+            pointer-events: none;
+            display: none; /* Initially hide */
+            z-index: 30;
         }
     </style>
 </head>
@@ -103,16 +103,16 @@
         <img id="halo" class="overlay" src="images/200.gif" alt="Halo">
         <img id="text" class="overlay" src="images/IMG_3383.gif" alt="Text">
         
-        <!-- Capture Button -->
         <button id="captureButton" class="capture-button" onclick="captureSelfie()">Selfie</button>
 
-        <!-- Flash effect overlay -->
-        <div id="flash" class="flash"></div>
-        
+        <!-- Flash Effect -->
+        <div id="flashEffect" class="flash"></div>
+
+        <!-- Polaroid Display -->
+        <img id="polaroidDisplay" alt="Polaroid" />
         <div id="successMessage">Photo saved successfully!</div>
     </div>
 
-    <!-- Include html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
@@ -121,10 +121,10 @@
         const halo = document.getElementById('halo');
         const text = document.getElementById('text');
         const captureButton = document.getElementById('captureButton');
-        const flash = document.getElementById('flash');
+        const polaroidDisplay = document.getElementById('polaroidDisplay');
         const successMessage = document.getElementById('successMessage');
+        const flashEffect = document.getElementById('flashEffect');
 
-        // Load the face mesh model
         const faceMesh = new FaceMesh({
             locateFile: (file) => {
                 return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
@@ -133,7 +133,6 @@
 
         faceMesh.onResults(onResults);
 
-        // Set up the camera
         const camera = new Camera(video, {
             onFrame: async () => {
                 await faceMesh.send({ image: video });
@@ -143,80 +142,97 @@
         });
         camera.start();
 
-        // Track positions of overlays
-        let haloX, haloY, textX, textY;
-
         function onResults(results) {
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                 const landmarks = results.multiFaceLandmarks[0];
 
-                // Show overlays only when a face is detected
                 halo.style.display = 'block';
                 text.style.display = 'block';
 
-                // Halo position (above the forehead)
                 const forehead = landmarks[10];
-                haloX = (1 - forehead.x) * video.clientWidth;
-                haloY = forehead.y * video.clientHeight - 200;
-                halo.style.left = `${haloX}px`;
-                halo.style.top = `${haloY}px`;
+                halo.style.left = `${(1 - forehead.x) * video.clientWidth}px`;
+                halo.style.top = `${forehead.y * video.clientHeight - 200}px`;
 
-                // Text position (near chin)
                 const chin = landmarks[152];
-                textX = (1 - chin.x) * video.clientWidth;
-                textY = chin.y * video.clientHeight + 20;
-                text.style.left = `${textX}px`;
-                text.style.top = `${textY}px`;
+                text.style.left = `${(1 - chin.x) * video.clientWidth}px`;
+                text.style.top = `${chin.y * video.clientHeight + 20}px`;
             } else {
-                // Hide overlays if no face is detected
                 halo.style.display = 'none';
                 text.style.display = 'none';
             }
         }
 
-        // Capture screenshot using html2canvas
         function captureSelfie() {
             captureButton.style.display = 'none';
 
             const container = document.getElementById('screenshot-container');
-            const width = container.clientWidth;
-            const height = container.clientHeight;
 
             html2canvas(container, {
-                width: width,
-                height: height,
+                width: container.clientWidth,
+                height: container.clientHeight,
                 scale: 3,
                 useCORS: true
             }).then(canvas => {
                 const image = canvas.toDataURL('image/png');
 
-                // Trigger flash effect
-                flash.classList.add('active');
-                setTimeout(() => {
-                    flash.classList.remove('active');
-                }, 100); // Flash duration
+                const polaroidCanvas = document.createElement('canvas');
+                const ctx = polaroidCanvas.getContext('2d');
 
-                // Show success message
-                successMessage.style.display = 'block';
+                const mobileAspectRatio = 9 / 16;
+                const polaroidWidth = Math.min(window.innerWidth * 0.9, 300);
+                const polaroidHeight = polaroidWidth / mobileAspectRatio;
 
-                // Hide success message after 2 seconds
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                }, 2000);
+                polaroidCanvas.width = polaroidWidth;
+                polaroidCanvas.height = polaroidHeight;
 
-                // Trigger download of the image
-                const link = document.createElement('a');
-                link.href = image;
-                link.download = 'selfie.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const img = new Image();
+                img.onload = function() {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, polaroidWidth, polaroidHeight);
+                    ctx.fillRect(0, 0, polaroidWidth, 20);
+
+                    const imgWidth = polaroidWidth - 40;
+                    const imgHeight = imgWidth / mobileAspectRatio;
+                    const offsetX = 20;
+                    const offsetY = 20;
+
+                    ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight);
+
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, 30, polaroidHeight);
+                    ctx.fillRect(polaroidWidth - 30, 0, 30, polaroidHeight);
+
+                    const polaroidImage = polaroidCanvas.toDataURL('image/png');
+
+                    polaroidDisplay.src = polaroidImage;
+                    polaroidDisplay.style.display = 'block';
+
+                    successMessage.style.display = 'block';
+
+                    setTimeout(() => {
+                        polaroidDisplay.style.display = 'none';
+                        successMessage.style.display = 'none';
+                    }, 3000);
+
+                    const link = document.createElement('a');
+                    link.href = polaroidImage;
+                    link.download = 'selfie_polaroid.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                img.src = image;
             });
+
+            // Flash effect
+            flashEffect.style.display = 'block';
+            setTimeout(() => {
+                flashEffect.style.display = 'none';
+            }, 200); // Flash lasts for 200 milliseconds
 
             captureButton.style.display = 'block';
         }
 
-        // Show capture button when video is ready
         video.addEventListener('loadedmetadata', () => {
             captureButton.style.display = 'block';
         });
