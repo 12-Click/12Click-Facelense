@@ -174,9 +174,13 @@
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
-                // Set Polaroid canvas dimensions with even thicker top and bottom borders
+                // Adjust Polaroid border thickness based on screen width (desktop vs mobile)
+                const topBorder = window.innerWidth < 768 ? 180 : 150;  // 180px on mobile, 150px on desktop
+                const bottomBorder = window.innerWidth < 768 ? 280 : 250; // 280px on mobile, 250px on desktop
+
+                // Set Polaroid canvas dimensions based on dynamic top/bottom borders
                 const polaroidWidth = originalCanvas.width + 80; // 40px on each side
-                const polaroidHeight = originalCanvas.height + 400; // 150px on top, 250px on bottom
+                const polaroidHeight = originalCanvas.height + topBorder + bottomBorder;
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -186,7 +190,7 @@
                 ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
 
                 // Draw the captured screenshot onto the Polaroid
-                ctx.drawImage(originalCanvas, 40, 150); // Position to create square effect with thick borders
+                ctx.drawImage(originalCanvas, 40, topBorder); // Position to create square effect with thick borders
 
                 // Show success message
                 successMessage.style.display = 'block';
