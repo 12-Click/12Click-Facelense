@@ -180,7 +180,7 @@
                 squareCanvas.width = squareSize;
                 squareCanvas.height = squareSize;
 
-                // Draw the image centered on the square canvas
+                // Draw the original canvas on the square canvas, ensuring overlays are included
                 ctx.drawImage(
                     originalCanvas,
                     (originalCanvas.width - squareSize) / 2, // Centering the image
@@ -201,7 +201,7 @@
                 squareCanvas.toBlob(blob => {
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'selfie_square.png'; // Updated filename
+                    link.download = 'selfie_square_with_overlays.png'; // Updated filename
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
