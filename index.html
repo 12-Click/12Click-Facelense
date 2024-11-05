@@ -174,12 +174,14 @@
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
-                // Dynamic borders based on screen size to create a square photo area in the Polaroid effect
-                const borderSize = window.innerWidth < 768 ? 300 : 200;  // Thicker borders on mobile
+                // Increased border size for top and bottom, reduced image size
+                const topBorder = 350;  // Increased top border
+                const bottomBorder = 400; // Increased bottom border
+                const sideBorder = 60; // Reduced side borders for balanced look
 
-                // Set Polaroid canvas dimensions with thick top/bottom borders to create a square effect
-                const polaroidWidth = originalCanvas.width + 80; // 40px on each side
-                const polaroidHeight = originalCanvas.height + 2 * borderSize; // Border size added on top and bottom
+                // Set Polaroid canvas dimensions
+                const polaroidWidth = originalCanvas.width * 0.5 + sideBorder * 2; // Scale down width by 50%
+                const polaroidHeight = originalCanvas.height * 0.5 + topBorder + bottomBorder; // Scale down height by 50%
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -188,8 +190,8 @@
                 ctx.fillStyle = 'white';
                 ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
 
-                // Draw the captured screenshot onto the Polaroid, centered in the square area
-                ctx.drawImage(originalCanvas, 40, borderSize);
+                // Draw the smaller square image in the center
+                ctx.drawImage(originalCanvas, sideBorder, topBorder, originalCanvas.width * 0.5, originalCanvas.height * 0.5);
 
                 // Show success message
                 successMessage.style.display = 'block';
