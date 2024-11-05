@@ -158,11 +158,11 @@
         function captureSelfie() {
             captureButton.style.display = 'none';
 
-            const container = document.getElementById('screenshot-container');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+            const videoContainer = document.getElementById('video'); // Capture only the video element
+            const width = videoContainer.clientWidth;
+            const height = videoContainer.clientHeight;
 
-            html2canvas(container, {
+            html2canvas(videoContainer, {
                 width: width,
                 height: height,
                 scale: window.devicePixelRatio || 2,
@@ -174,14 +174,14 @@
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
-                // Increased border size for top and bottom, reduced image size
-                const topBorder = 350;  // Increased top border
-                const bottomBorder = 400; // Increased bottom border
-                const sideBorder = 60; // Reduced side borders for balanced look
+                // Define the Polaroid effect dimensions
+                const topBorder = 100;  
+                const bottomBorder = 200; 
+                const sideBorder = 40; 
 
-                // Set Polaroid canvas dimensions
-                const polaroidWidth = originalCanvas.width * 0.5 + sideBorder * 2; // Scale down width by 50%
-                const polaroidHeight = originalCanvas.height * 0.5 + topBorder + bottomBorder; // Scale down height by 50%
+                // Set Polaroid canvas dimensions around the video feed
+                const polaroidWidth = width + sideBorder * 2;
+                const polaroidHeight = height + topBorder + bottomBorder;
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -190,8 +190,8 @@
                 ctx.fillStyle = 'white';
                 ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
 
-                // Draw the smaller square image in the center
-                ctx.drawImage(originalCanvas, sideBorder, topBorder, originalCanvas.width * 0.5, originalCanvas.height * 0.5);
+                // Draw the captured video image onto the Polaroid
+                ctx.drawImage(originalCanvas, sideBorder, topBorder);
 
                 // Show success message
                 successMessage.style.display = 'block';
