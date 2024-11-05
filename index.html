@@ -158,11 +158,11 @@
         function captureSelfie() {
             captureButton.style.display = 'none';
 
-            const videoContainer = document.getElementById('video'); // Capture only the video element
-            const width = videoContainer.clientWidth;
-            const height = videoContainer.clientHeight;
+            const container = document.getElementById('screenshot-container');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
 
-            html2canvas(videoContainer, {
+            html2canvas(container, {
                 width: width,
                 height: height,
                 scale: window.devicePixelRatio || 2,
@@ -171,37 +171,37 @@
                 flash.classList.add('active');
                 setTimeout(() => flash.classList.remove('active'), 100);
 
-                const polaroidCanvas = document.createElement('canvas');
-                const ctx = polaroidCanvas.getContext('2d');
+                const squareSize = Math.min(originalCanvas.width, originalCanvas.height); // Determine the size for the square
 
-                // Define the Polaroid effect dimensions
-                const topBorder = 100;  
-                const bottomBorder = 200; 
-                const sideBorder = 40; 
+                const squareCanvas = document.createElement('canvas');
+                const ctx = squareCanvas.getContext('2d');
 
-                // Set Polaroid canvas dimensions around the video feed
-                const polaroidWidth = width + sideBorder * 2;
-                const polaroidHeight = height + topBorder + bottomBorder;
+                // Set square canvas dimensions
+                squareCanvas.width = squareSize;
+                squareCanvas.height = squareSize;
 
-                polaroidCanvas.width = polaroidWidth;
-                polaroidCanvas.height = polaroidHeight;
-
-                // Draw the Polaroid background
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
-
-                // Draw the captured video image onto the Polaroid
-                ctx.drawImage(originalCanvas, sideBorder, topBorder);
+                // Draw the image centered on the square canvas
+                ctx.drawImage(
+                    originalCanvas,
+                    (originalCanvas.width - squareSize) / 2, // Centering the image
+                    (originalCanvas.height - squareSize) / 2,
+                    squareSize,
+                    squareSize,
+                    0,
+                    0,
+                    squareSize,
+                    squareSize
+                );
 
                 // Show success message
                 successMessage.style.display = 'block';
                 setTimeout(() => successMessage.style.display = 'none', 2000);
 
-                // Save the Polaroid canvas as an image
-                polaroidCanvas.toBlob(blob => {
+                // Save the square canvas as an image
+                squareCanvas.toBlob(blob => {
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'polaroid_selfie.png';
+                    link.download = 'selfie_square.png'; // Updated filename
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
