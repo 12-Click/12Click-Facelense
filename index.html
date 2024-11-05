@@ -84,6 +84,13 @@
             font-size: 16px;
             display: none;
         }
+
+        /* Optional: Add styling for the Polaroid effect */
+        .polaroid-container {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -174,14 +181,14 @@
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
-                // Increased border size for top and bottom, reduced image size
-                const topBorder = 350;  // Increased top border
-                const bottomBorder = 400; // Increased bottom border
-                const sideBorder = 60; // Reduced side borders for balanced look
+                // Adjusted border sizes for a more Instax-like feel
+                const topBorder = 30;  // Reduced top border
+                const bottomBorder = 80; // Increased bottom border
+                const sideBorder = 30; // Side borders
 
                 // Set Polaroid canvas dimensions
-                const polaroidWidth = originalCanvas.width * 0.5 + sideBorder * 2; // Scale down width by 50%
-                const polaroidHeight = originalCanvas.height * 0.5 + topBorder + bottomBorder; // Scale down height by 50%
+                const polaroidWidth = originalCanvas.width * 0.7 + sideBorder * 2; // 70% width of the original
+                const polaroidHeight = originalCanvas.height * 0.7 + topBorder + bottomBorder; // 70% height of the original
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
@@ -190,14 +197,8 @@
                 ctx.fillStyle = 'white';
                 ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
 
-                // New size for the photo inside the Polaroid
-                const photoWidth = originalCanvas.width * 0.4; // Scale down photo width
-                const photoHeight = originalCanvas.height * 0.4; // Scale down photo height
-                const photoX = (polaroidCanvas.width - photoWidth) / 2; // Center photo horizontally
-                const photoY = topBorder; // Position photo at the top border
-
                 // Draw the smaller square image in the center
-                ctx.drawImage(originalCanvas, photoX, photoY, photoWidth, photoHeight);
+                ctx.drawImage(originalCanvas, sideBorder, topBorder, originalCanvas.width * 0.7, originalCanvas.height * 0.7);
 
                 // Show success message
                 successMessage.style.display = 'block';
