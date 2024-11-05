@@ -84,6 +84,13 @@
             font-size: 16px;
             display: none;
         }
+
+        /* Optional: Add styling for the Polaroid effect */
+        .polaroid-container {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -171,38 +178,37 @@
                 flash.classList.add('active');
                 setTimeout(() => flash.classList.remove('active'), 100);
 
-                const squareSize = Math.min(originalCanvas.width, originalCanvas.height); // Determine the size for the square
+                const polaroidCanvas = document.createElement('canvas');
+                const ctx = polaroidCanvas.getContext('2d');
 
-                const squareCanvas = document.createElement('canvas');
-                const ctx = squareCanvas.getContext('2d');
+                // Adjusted border sizes for a more Instax-like feel
+                const topBorder = 30;  // Reduced top border
+                const bottomBorder = 80; // Increased bottom border
+                const sideBorder = 30; // Side borders
 
-                // Set square canvas dimensions, making the height larger for better overlay visibility
-                const extraHeight = 100; // Extra height to ensure overlays are captured
-                squareCanvas.width = squareSize;
-                squareCanvas.height = squareSize + extraHeight; // Increased height
+                // Set Polaroid canvas dimensions
+                const polaroidWidth = originalCanvas.width * 0.7 + sideBorder * 2; // 70% width of the original
+                const polaroidHeight = originalCanvas.height * 0.7 + topBorder + bottomBorder; // 70% height of the original
 
-                // Draw the original canvas on the square canvas, ensuring overlays are included
-                ctx.drawImage(
-                    originalCanvas,
-                    (originalCanvas.width - squareSize) / 2, // Centering the image
-                    (originalCanvas.height - squareSize - extraHeight) / 2, // Adjust vertical centering
-                    squareSize,
-                    squareSize,
-                    0,
-                    0,
-                    squareSize,
-                    squareSize + extraHeight // Drawing larger height
-                );
+                polaroidCanvas.width = polaroidWidth;
+                polaroidCanvas.height = polaroidHeight;
+
+                // Draw the Polaroid background
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, polaroidCanvas.width, polaroidCanvas.height);
+
+                // Draw the smaller square image in the center
+                ctx.drawImage(originalCanvas, sideBorder, topBorder, originalCanvas.width * 0.7, originalCanvas.height * 0.7);
 
                 // Show success message
                 successMessage.style.display = 'block';
                 setTimeout(() => successMessage.style.display = 'none', 2000);
 
-                // Save the square canvas as an image
-                squareCanvas.toBlob(blob => {
+                // Save the Polaroid canvas as an image
+                polaroidCanvas.toBlob(blob => {
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'selfie_square_with_overlays.png'; // Updated filename
+                    link.download = 'polaroid_selfie.png';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
