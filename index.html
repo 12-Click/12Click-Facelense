@@ -176,21 +176,22 @@
                 const squareCanvas = document.createElement('canvas');
                 const ctx = squareCanvas.getContext('2d');
 
-                // Set square canvas dimensions
+                // Set square canvas dimensions, making the height larger for better overlay visibility
+                const extraHeight = 100; // Extra height to ensure overlays are captured
                 squareCanvas.width = squareSize;
-                squareCanvas.height = squareSize;
+                squareCanvas.height = squareSize + extraHeight; // Increased height
 
                 // Draw the original canvas on the square canvas, ensuring overlays are included
                 ctx.drawImage(
                     originalCanvas,
                     (originalCanvas.width - squareSize) / 2, // Centering the image
-                    (originalCanvas.height - squareSize) / 2,
+                    (originalCanvas.height - squareSize - extraHeight) / 2, // Adjust vertical centering
                     squareSize,
                     squareSize,
                     0,
                     0,
                     squareSize,
-                    squareSize
+                    squareSize + extraHeight // Drawing larger height
                 );
 
                 // Show success message
