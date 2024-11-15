@@ -68,36 +68,31 @@
             display: none;
         }
 
-        /* Optional: Add styling for the Polaroid effect */
-        .polaroid-container {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        /* New Ring Flash Effect */
-        .flash-ring {
+        /* CSS for corner burst effect */
+        .corner-flash {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            border: 5px solid #87CEEB;
-            box-sizing: border-box;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.8);
             opacity: 0;
             z-index: 15;
-            animation: pulse-ring 0.8s ease-out forwards;
+            pointer-events: none;
+            animation: burst-flash 0.5s ease-out forwards;
+            border-radius: 50%;
         }
 
-        @keyframes pulse-ring {
+        .corner-flash.top-left { top: 0; left: 0; }
+        .corner-flash.top-right { top: 0; right: 0; }
+        .corner-flash.bottom-left { bottom: 0; left: 0; }
+        .corner-flash.bottom-right { bottom: 0; right: 0; }
+
+        @keyframes burst-flash {
             0% {
                 transform: scale(0);
                 opacity: 1;
             }
             100% {
-                transform: scale(1.5);
+                transform: scale(10);
                 opacity: 0;
             }
         }
@@ -183,26 +178,27 @@
                 scale: window.devicePixelRatio || 2,
                 useCORS: true
             }).then(originalCanvas => {
-                // Create and add the ring flash effect
-                const ring = document.createElement('div');
-                ring.classList.add('flash-ring');
-                container.appendChild(ring);
-
-                setTimeout(() => {
-                    ring.remove();
-                }, 800); // Matches the animation duration
+                // Create corner flashes
+                ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(position => {
+                    const flash = document.createElement('div');
+                    flash.classList.add('corner-flash', position);
+                    container.appendChild(flash);
+                    setTimeout(() => {
+                        flash.remove();
+                    }, 500);
+                });
 
                 const polaroidCanvas = document.createElement('canvas');
                 const ctx = polaroidCanvas.getContext('2d');
 
                 // Adjusted border sizes for a more Instax-like feel
-                const topBorder = 50;
-                const bottomBorder = 150;
-                const sideBorder = 40;
+                const topBorder = 50;  // Reduced top border
+                const bottomBorder = 150; // Increased bottom border
+                const sideBorder = 40; // Side borders
 
                 // Set Polaroid canvas dimensions
-                const polaroidWidth = originalCanvas.width * 0.7 + sideBorder * 2;
-                const polaroidHeight = originalCanvas.height * 0.7 + topBorder + bottomBorder;
+                const polaroidWidth = originalCanvas.width * 0.7 + sideBorder * 2; // 70% width of the original
+                const polaroidHeight = originalCanvas.height * 0.7 + topBorder + bottomBorder; // 70% height of the original
 
                 polaroidCanvas.width = polaroidWidth;
                 polaroidCanvas.height = polaroidHeight;
